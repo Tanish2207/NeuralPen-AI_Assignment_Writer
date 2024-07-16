@@ -19,7 +19,7 @@ creds = None
 
 # Reading and storing the content from latest modified .md
 md_files = [file for file in os.listdir(".") if file.endswith(".md")]
-latest_file = sorted(md_files, key=lambda x:os.path.getmtime(x))[-1]
+latest_file = sorted(md_files, key=lambda x: os.path.getmtime(x))[-1]
 with open(latest_file, 'r', encoding='utf-8') as file:
     msg = file.read()
 
@@ -27,6 +27,7 @@ html_content = markdown2.markdown(msg)
 f = open("mdToHTML.html", 'w')
 f.write(html_content)
 f.close()
+
 
 def token():
     import os.path
@@ -47,13 +48,14 @@ def token():
 
 def folder_exists(name):
     drive_service = build('drive', 'v3', credentials=creds)
-    query = f"name = '{name}' and mimeType = 'application/vnd.google-apps.folder'"
+    query = f"name = '{
+        name}' and mimeType = 'application/vnd.google-apps.folder'"
     try:
-        response = drive_service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+        response = drive_service.files().list(q=query, spaces='drive',
+                                              fields='files(id, name)').execute()
         files = response.get('files', [])
         if not files:
             # Folder does not exist
-            print("DNE!!!!!")
             return None
         else:
             # Folder exists
@@ -61,6 +63,7 @@ def folder_exists(name):
     except HttpError as error:
         print(f"An error occurred: {error}")
         return None
+
 
 def create_folder(name):
     folder_id = folder_exists(name)
@@ -102,7 +105,9 @@ def main(gdocs_content):
     token()
     folder_id = create_folder("NeuralPen Assignments")
     myId = doc_id(latest_file[:-3], folder_id)
-    doc_content( myId, gdocs_content)
+    doc_content(myId, gdocs_content)
+    print("\n\nClick on the below link to edit your assignment")
+    print(f"https://docs.google.com/document/d/{myId}/edit")
 
 
 def html_to_google_docs_requests(html_content):
@@ -112,6 +117,10 @@ def html_to_google_docs_requests(html_content):
     requests = []
     current_index = 1  # Start at index 1
 
+    anchors = soup.find_all('a')
+    for anchor in anchors:
+        text = anchor.get_text()
+        href = anchor.get('href')
     all_strong = soup.find_all('strong')
     for tag in all_strong:
         tag.name = 'b'
@@ -190,9 +199,35 @@ def html_to_google_docs_requests(html_content):
                         }
                     })
                     current_index += len(element.text) + 1  # Update index
+                elif element.name == 'a':
+                        text = element.get_text()
+                        href = element.get('href')
+                        requests.append({
+                            'insertText': {
+                                'location': {
+                                    'index': current_index
+                                },
+                                'text': f"{text} "
+                            }
+                        })
+                        requests.append({
+                            'updateTextStyle': {
+                                'range': {
+                                    'startIndex': current_index,
+                                    'endIndex': current_index + len(text)
+                                },
+                                'textStyle': {
+                                    'link': {
+                                        'url': href
+                                    }
+                                },
+                                'fields': 'link'
+                            }
+                        })
+                        current_index += len(text)
                 else:
                     requests.append({'insertText': {'location': {
-                                    'index': current_index}, 'text':'\n' + child.text + '\n'}})
+                                    'index': current_index}, 'text': '\n' + child.text + '\n'}})
                     requests.append({
                         'updateTextStyle': {
                             'range': {'startIndex': current_index, 'endIndex': current_index + len(child.text)},
@@ -207,6 +242,32 @@ def html_to_google_docs_requests(html_content):
                         }
                     })
                     current_index += len(child.text) + 2  # Update index
+        elif element.name == 'a':
+                        text = element.get_text()
+                        href = element.get('href')
+                        requests.append({
+                            'insertText': {
+                                'location': {
+                                    'index': current_index
+                                },
+                                'text': f"{text} "
+                            }
+                        })
+                        requests.append({
+                            'updateTextStyle': {
+                                'range': {
+                                    'startIndex': current_index,
+                                    'endIndex': current_index + len(text)
+                                },
+                                'textStyle': {
+                                    'link': {
+                                        'url': href
+                                    }
+                                },
+                                'fields': 'link'
+                            }
+                        })
+                        current_index += len(text)
 
         elif element.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
             heading_level = element.name.upper()
@@ -271,6 +332,34 @@ def html_to_google_docs_requests(html_content):
                     })
                     current_index += len(li.text) + 3
 
+                for elem in li.contents:
+                    if elem.name == 'a':
+                        text = elem.get_text()
+                        href = elem.get('href')
+                        requests.append({
+                            'insertText': {
+                                'location': {
+                                    'index': current_index
+                                },
+                                'text': f"{text}  "
+                            }
+                        })
+                        requests.append({
+                            'updateTextStyle': {
+                                'range': {
+                                    'startIndex': current_index,
+                                    'endIndex': current_index + len(text)
+                                },
+                                'textStyle': {
+                                    'link': {
+                                        'url': href
+                                    }
+                                },
+                                'fields': 'link'
+                            }
+                        })
+                        current_index += len(text)+3
+
             requests.append({
                 'insertText': {
                     'location': {'index': current_index},
@@ -313,6 +402,35 @@ def html_to_google_docs_requests(html_content):
                     })
                     current_index += len(li.text) + 3
 
+                for elem in li.contents:
+                    if elem.name == 'a':
+                        text = elem.get_text()
+                        href = elem.get('href')
+                        requests.append({
+                            'insertText': {
+                                'location': {
+                                    'index': current_index
+                                },
+                                'text': f"{text} "
+                            }
+                        })
+                        requests.append({
+                            'updateTextStyle': {
+                                'range': {
+                                    'startIndex': current_index,
+                                    'endIndex': current_index + len(text)
+                                },
+                                'textStyle': {
+                                    'link': {
+                                        'url': href
+                                    }
+                                },
+                                'fields': 'link'
+                            }
+                        })
+                        current_index += len(text)
+                    
+
             requests.append({
                 'insertText': {
                     'location': {'index': current_index},
@@ -320,6 +438,8 @@ def html_to_google_docs_requests(html_content):
                 }
             })
             current_index += 2
+        
+
     print("\ncurrent_index = ", current_index)
     requests.append(
         {
