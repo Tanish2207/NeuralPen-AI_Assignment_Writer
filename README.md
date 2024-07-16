@@ -1,4 +1,6 @@
-Tired of writing online assignments and then formatting them ?
+<img src="https://github.com/user-attachments/assets/ddc7a5fc-fa6d-41a5-8e0d-e397074309a6" width='30%'>
+
+Tired of writing online assignments and then formatting them ?😪
 
 Get ready to revolutionize your assignment writing with **Neural Pen** ! Backed by the **Llama 3 API**🦙, you just have to provide the question and it will generate a sequentially formatted **Google Doc** saved in your own Google Drive. 
 
