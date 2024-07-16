@@ -2,7 +2,7 @@
 
 Tired of writing online assignments and then formatting them ?😪
 
-Get ready to revolutionize your assignment writing with **Neural Pen** ! Backed by the **Llama 3 API**🦙, you just have to provide the question and it will generate a sequentially formatted **Google Doc** saved in your own Google Drive. 
+Get ready to revolutionize your assignment writing with **Neural Pen** ! Backed by the **Llama 3**🦙, you just have to provide the question and it will generate a sequentially formatted **Google Doc** saved in your own Google Drive. 
 
 How it Works 🧐
 
@@ -13,7 +13,11 @@ How it Works 🧐
 
 ## Installation
 1. Clone the repo 
-2. Go to groq.com and generate an API Key which has to be added in a .env file
-3. Run ```pip install -r requirements.txt``` to install all libraries
-4. Run the ```main.py``` file
+2. Go to [groq.com](https://groq.com) -> Groq Cloud -> Sign In 
+3. Go to API Keys -> Create API Key
+4. Make a new ```.env``` file in the same directory where repo is cloned.
+5. ```GROQ_API_KEY = "your_api_key"```
+Add this line to .env
+6. Run ```pip install -r requirements.txt``` to install all libraries
+7. Run the ```main.py``` file using ```python main.py``` command
 
