@@ -117,10 +117,6 @@ def html_to_google_docs_requests(html_content):
     requests = []
     current_index = 1  # Start at index 1
 
-    anchors = soup.find_all('a')
-    for anchor in anchors:
-        text = anchor.get_text()
-        href = anchor.get('href')
     all_strong = soup.find_all('strong')
     for tag in all_strong:
         tag.name = 'b'
